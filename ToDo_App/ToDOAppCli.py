@@ -3,7 +3,6 @@ import function
 import time
 
 now=time.strftime("%b %m,%Y %H:%M:%S")
-print("Date is below")
 print("Date and Time",now)
 
 while True:
