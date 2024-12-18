@@ -1,0 +1,4 @@
+Take the key
+goto hometown
+take notes and calcalute amount
+inform the same and take the amount
