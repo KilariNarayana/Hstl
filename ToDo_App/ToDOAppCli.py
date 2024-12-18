@@ -3,7 +3,7 @@ import function
 import time
 
 now=time.strftime("%b %m,%Y %H:%M:%S")
-print("Date and Time",now)
+print("Date and Time:",now)
 
 while True:
     user_action = input("Enter todo add, edit, show, done, or exit ")
