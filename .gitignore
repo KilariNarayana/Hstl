@@ -1,2 +1,9 @@
 /ToDo_App/.venv/
 /ToDo_App/.ipynb_checkpoints/
+/ToDo_App/.idea/.gitignore
+/ToDo_App/.idea/misc.xml
+/ToDo_App/.idea/modules.xml
+/ToDo_App/.idea/inspectionProfiles/profiles_settings.xml
+/ToDo_App/.idea/ToDo_App.iml
+/ToDo_App/.idea/vcs.xml
+/.idea/workspace.xml
