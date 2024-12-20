@@ -22,7 +22,6 @@ window=sg.Window("My To Do App",
                          [exit_button]],
                  font=("Helvetica",20))
 
-
 while True:
     event, values = window.read(timeout=200)
     window["clock"].update(value=time.strftime("%b %m,%Y %H:%M:%S"))
