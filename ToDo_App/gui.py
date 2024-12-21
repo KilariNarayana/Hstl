@@ -23,8 +23,8 @@ window=sg.Window("My To Do App",
                  font=("Helvetica",20))
 
 while True:
-    event, values = window.read(timeout=200)
-    window["clock"].update(value=time.strftime("%b %m,%Y %H:%M:%S"))
+    event, values = window.read()
+    #window["clock"].update(value=time.strftime("%b %m,%Y %H:%M:%S"))
     match event:
         case "Add":
             add_to_do=values["todo"] + "\n"
