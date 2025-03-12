@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Student</title>
+</head>
+<body>
+    <h1>Student Details</h1>
+    <p><strong>Name:</strong> {{ student['Name'] }}</p>
+    <p><strong>Phone Number:</strong> {{ student['Phone Number'] }}</p>
+    <p><strong>Date of Birth:</strong> {{ student['Date of Birth'] }}</p>
+    <p><strong>Age:</strong> {{ student['Age'] }}</p>
+    <p><strong>Permanent Address:</strong> {{ student['Permanent Address'] }}</p>
+    <p><strong>Purpose of Staying:</strong> {{ student['Purpose of Staying'] }}</p>
+    <p><strong>Date of Joining:</strong> {{ student['Date of Joining'] }}</p>
+    <p><strong>Father Name:</strong> {{ student['Father Name'] }}</p>
+    <p><strong>Family/Reference Number:</strong> {{ student['Family Number/Reference Number'] }}</p>
+    <p><strong>Office Address:</strong> {{ student['Office Address'] }}</p>
+    <p><strong>Aadhar Number:</strong> {{ student['Aadhar Number'] }}</p>
+    <p><strong>Date of Exit:</strong> {{ student['Date of Exit'] }}</p>
+    <hr>
+    <h2>Uploaded Documents</h2>
+    {% if student['Photo Path'] %}
+        <p><strong>Photo:</strong> <img src="{{ student['Photo Path'] }}" alt="{{ student['Name'] }}'s Photo" width="200"></p>
+    {% endif %}
+    {% if student['Identity Proof Path'] %}
+        <p><strong>Identity Proof:</strong> <a href="{{ student['Identity Proof Path'] }}" target="_blank">View Document</a></p>
+    {% endif %}
+</body>
+</html>

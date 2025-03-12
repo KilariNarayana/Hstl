@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Edit Room {{ room['Room Number'] }}</h1>
+    <form method="POST" action="{{ url_for('edit_room', room_number=room['Room Number']) }}">
+    <div>
+        <label for="room_number">Room Number:</label>
+        <input type="text" id="room_number" name="room_number" value="{{ room['Room Number'] }}" disabled>
+    </div>
+    <div>
+        <label for="capacity">Capacity:</label>
+        <input type="number" id="capacity" name="capacity" value="{{ room['Capacity'] }}" required>
+    </div>
+    <div>
+        <label for="floor">Floor:</label>
+        <input type="number" id="floor" name="floor" value="{{ room['Floor'] }}" required>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+    </form>
+</body>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-info">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+</html>

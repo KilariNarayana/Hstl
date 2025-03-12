@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Rooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Manage Rooms</h1>
+
+    <!-- Add Room Section -->
+    <form method="POST" action="{{ url_for('add_room') }}">
+        <h2>Add New Room</h2>
+        <label for="room_number">Room Number:</label>
+        <input type="text" name="room_number" required>
+        <label for="capacity">Capacity:</label>
+        <input type="number" name="capacity" min="1" required>
+        <label for="floor">Floor:</label>
+        <input type="number" name="floor" min="1" required>
+        <button type="submit">Add Room</button>
+    </form>
+
+    <!-- Filter by Floor -->
+    <h2>View Rooms</h2>
+    <label for="floor_filter">Select Floor:</label>
+    <select id="floor_filter" onchange="filterFloor(this)">
+        <option value="all">All Floors</option>
+        {% for floor in floor_data.keys() %}
+        <option value="{{ floor }}">Floor {{ floor }}</option>
+        {% endfor %}
+    </select>
+
+    <script>
+        function filterFloor(select) {
+            const selectedFloor = select.value;
+            const rows = document.querySelectorAll('.room-item');
+            rows.forEach(row => {
+                if (selectedFloor === "all" || row.dataset.floor === selectedFloor) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <!-- Rooms Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Floor</th>
+                <th>Capacity</th>
+                <th>Occupied Beds</th>
+                <th>Available Beds</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for room in rooms %}
+            <tr class="room-item" data-floor="{{ room.Floor }}">
+                <td>{{ room['Room Number'] }}</td>
+                <td>{{ room.get('Floor', 'Unknown') }}</td>
+                <td>{{ room.get('Capacity', 'N/A') }}</td>
+                <td>{{ room.get('Occupied Beds', 0) }}</td>
+                <td>{{ room['Capacity'] - room['Occupied Beds'] }}</td>
+                <td>
+                    <!-- Edit Room Button -->
+                    <a href="{{ url_for('edit_room', room_number=room['Room Number']) }}" class="btn btn-primary">Edit</a>
+
+                    <!-- Delete Room Button -->
+                    <!-- Needs a form with POST request, as DELETE links are not secure -->
+                    <form action="{{ url_for('delete_room', room_number=room['Room Number']) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this room?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Floor-Wise Summary -->
+    <h2>Floor-Wise Summary</h2>
+    <ul>
+        {% for floor, summary in floor_data.items() %}
+        <li>
+            Floor {{ floor }}: Total Beds: {{ summary['Total Beds'] }},
+            Occupied Beds: {{ summary['Occupied Beds'] }},
+            Available Beds: {{ summary['Available Beds'] }}
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back Home</a>
+</body>
+</html>

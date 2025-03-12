@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Fee Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Edit Fee Details</h1>
+
+        <!-- Flash Messages (if any) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Edit Fee Form -->
+        <form method="POST" action="{{ url_for('edit_fee', member_id=member_fee['member_id']) }}">
+
+            <!-- Name of the member as a static field -->
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" name="name" value="{{ member_fee['name'] }}" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="room_number" class="form-label">Room Number</label>
+                <input type="text" id="room_number" name="room_number" value="{{ member_fee['room_number'] }}" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="fee_amount" class="form-label">Fee Amount</label>
+                <input type="text" id="fee_amount" name="fee_amount" value="{{ member_fee['fee_amount'] }}" class="form-control" readonly>
+            </div>
+
+            <!-- Select Columns Dropdown -->
+            <div class="mb-3">
+                <label for="columns" class="form-label">Select Columns to Update</label>
+                <select id="columns" name="columns" class="form-select" multiple onchange="handleColumnSelection()">
+                    {% for column in member_fee.keys() %}
+                        {% if column not in ['member_id', 'name', 'room_number', 'fee_amount'] %} <!-- Skip non-editable fields -->
+                        <option value="{{ column }}">{{ column|replace("_", " ")|capitalize }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <small class="text-muted">Hold down Ctrl (Windows) or Cmd (Mac) to select multiple fields.</small>
+            </div>
+
+            <!-- Dynamic Input Fields -->
+            <div id="input-container">
+                <!-- Input fields for selected columns will appear here -->
+            </div>
+
+            <!-- Save Changes and Cancel Buttons -->
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{{ url_for('fee_details') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <!-- JavaScript to dynamically generate inputs -->
+    <script>
+        // JavaScript function as provided above
+        function handleColumnSelection() {
+    const selectedColumns = Array.from(document.getElementById("columns").selectedOptions).map(option => option.value);
+
+    // Get the container where input fields will be added
+    const inputContainer = document.getElementById("input-container");
+
+    // Clear the container to avoid duplicates
+    inputContainer.innerHTML = "";
+
+    selectedColumns.forEach(column => {
+        const formGroup = document.createElement("div");
+        formGroup.className = "mb-3";
+
+        // Create a label for the column
+        const label = document.createElement("label");
+        label.setAttribute("for", column);
+        label.className = "form-label";
+        label.innerText = column.charAt(0).toUpperCase() + column.slice(1).replace("_", " "); // Capitalize column name
+
+        if (["payment_date", "Amount_Paid_date"].includes(column)) {
+            // Create a date input field for date-related columns
+            const input = document.createElement("input");
+            input.type = "date";
+            input.className = "form-control";
+            input.id = column;
+            input.name = column;
+            input.value = "{{ member_fee[column] if column in member_fee else '' }}"; // Set default value if available
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+        } else if (["fee_paid_status", "advance_status"].includes(column)) {
+            // Create a dropdown (select element) for status fields
+            const select = document.createElement("select");
+            select.className = "form-select";
+            select.id = column;
+            select.name = column;
+
+            // Define the dropdown options
+            const options = ["Paid", "Unpaid", "Partially Paid"];
+            options.forEach(optionValue => {
+                const option = document.createElement("option");
+                option.value = optionValue;
+                option.textContent = optionValue;
+                // Set the selected option if it matches the existing value
+                if (optionValue === "{{ member_fee[column] if column in member_fee else '' }}") {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            formGroup.appendChild(label);
+            formGroup.appendChild(select);
+
+            // Add event listener to update other fields automatically based on the selected value
+            select.addEventListener("change", function () {
+                if (column === "fee_paid_status" && select.value === "Paid") {
+                    // Automatically populate Amount_Paid_date as fee_amount
+                    const feeAmountValue = "{{ member_fee['fee_amount'] if 'fee_amount' in member_fee else '' }}";
+                    const amountPaidDateField = document.getElementById("Amount_Paid_date");
+                    if (amountPaidDateField) {
+                        amountPaidDateField.value = feeAmountValue;
+                    }
+                }
+
+                if (column === "advance_status" && select.value === "Paid") {
+                    // Automatically populate advance_amount
+                    const advanceAmountField = document.getElementById("advance_amount");
+                    if (advanceAmountField) {
+                        advanceAmountField.value = "2000"; // Populate with 2000 when advance_status is "Paid"
+                    }
+                }
+            });
+        } else {
+            // Default text input for all other columns
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "form-control";
+            input.id = column;
+            input.name = column;
+            input.value = "{{ member_fee[column] if column in member_fee else '' }}"; // Set default value if available
+            input.placeholder = `Enter ${column.charAt(0).toUpperCase() + column.slice(1).replace("_", " ")}`; // Add a placeholder
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+        }
+
+        inputContainer.appendChild(formGroup);
+    });
+}
+    </script>
+</body>
+</html>

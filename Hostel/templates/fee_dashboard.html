@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Dashboard</title>
+</head>
+<body>
+
+<h1>Fee Dashboard</h1>
+
+<!-- Button to generate and download the fee Excel sheet -->
+<form action="/generate_fee_sheet" method="POST">
+    <button type="submit">Generate Fee Sheet</button>
+</form>
+
+ <p>Welcome to the Fee Dashboard. Use the options below to manage fee sheets and view user details.</p>
+
+    <form action="{{ url_for('fee_details') }}" method="get">
+        <button type="submit">View Fee Details</button>
+    </form>
+
+</body>
+</html>
