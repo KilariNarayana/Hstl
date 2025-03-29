@@ -1,3 +1,4 @@
+
 /ToDo_App/.venv/
 /ToDo_App/.ipynb_checkpoints/
 /ToDo_App/.idea/.gitignore
@@ -8,3 +9,18 @@
 /ToDo_App/.idea/vcs.xml
 /.idea/workspace.xml
 /Compressed_zip
+
+# Ignore Python virtual environments
+.venv/
+__pycache__/
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore uploads
+uploads/
+

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hostel Management System</title>
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2e8b57;
+        }
+        p {
+            color: #4682b4;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4682b4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #2e8b57;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hostel Management System</h1>
+        <p>Number of Members: {{ members }}</p>
+        <p>Number of Rooms: {{ rooms }}</p>
+        <p>Total number of Beds: {{ total_no_beds }}</p>
+        <p>Number of Free Bed: {{ Num_free_beds }}</p>
+        <p>Number of Occupied Beds: {{ Num_Occ_beds }}</p>
+
+        <!-- Navigation Links -->
+        <a href="{{ url_for('add_member') }}">Add Member</a>
+        <a href="{{ url_for('manage_rooms') }}">Manage_rooms</a>
+        <a href="{{ url_for('search_member') }}">Search member</a>
+        <a href="{{ url_for('fee_dashboard') }}">Fee Dashboard</a>
+    </div>
+</body>
+</html>

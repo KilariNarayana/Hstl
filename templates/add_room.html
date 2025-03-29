@@ -1,0 +1,13 @@
+<form method="POST" action="{{ url_for('add_room') }}">
+    <h2>Add New Room</h2>
+    <label for="room_number">Room Number:</label>
+    <input type="text" name="room_number" required>
+
+    <label for="capacity">Capacity:</label>
+    <input type="number" name="capacity" min="1" required>
+
+    <label for="floor">Floor:</label>
+    <input type="number" name="floor" min="1" required>
+
+    <button type="submit">Add Room</button>
+</form>

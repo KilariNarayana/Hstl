@@ -1,0 +1,101 @@
+# Delete Room Route
+@app.route('/delete_room/<room_number>', methods=['POST'])
+def delete_room(room_number):
+    if Room.has_assigned_members(room_number):
+        flash("Cannot delete room. Members are assigned to it.")
+    else:
+        Room.delete_room(room_number)
+        flash(f"Room {room_number} deleted successfully!")
+    return redirect(url_for('manage_rooms'))  # Redirect to manage_rooms view
+
+
+@app.route("/")
+def dashboard():
+    """
+    Render the fee dashboard template.
+    """
+    # Always pass 'message', even if not defined
+    return render_template("fee_dashboard.html", message=None)
+
+@app.route("/generate_fee_sheet", methods=["POST"])
+def generate_fee_sheet():
+    """
+    Handle fee sheet generation requests and display a message.
+    """
+    try:
+        # Call the function to generate the fee sheet
+        result = generate_monthly_fee_sheet()
+        return render_template("fee_dashboard.html", message=result)
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template("fee_dashboard.html", message="Failed to generate the fee sheet!")
+
+
+
+                member_id,
+                name,
+                room_number,
+                fee_amount,
+                payment_date,
+                Amount_Paid_date,
+                paid_amount,
+                fee_paid_status,
+                advance_amount,
+                advance_status,
+                balance_amount
+
+@app.route('/fee-dashboard')
+def fee_dashboard():
+    # Step 1: Read data
+    members, _ = read_data()
+
+    # Step 2: Variables to store calculations
+    total_amount = 0  # Total amount to be received for the current month
+    total_received = 0  # Total amount received
+    paid_member_count = 0  # Count of members who paid
+    unpaid_member_count = 0  # Count of members who haven't paid
+    unpaid_members = []  # List of unpaid members
+    carry_forward_fee = 0  # Carry forward fees from last month
+    advance_not_paid_count = 0  # Count of members who have pending advance fees
+    advance_not_paid_members = []  # List of members with pending advance
+
+    # Step 3: Current month for filtering
+    current_month = datetime.now().strftime('%Y-%m')  # Example: "2023-10"
+
+    # Step 4: Iterate over members to calculate metrics
+    for member in members:
+        total_amount += member.get('fee_amount', 0)  # Assuming 'monthly_fee' holds monthly fees
+        if member.get('payment_date') and member['payment_date'].startswith(current_month):
+            total_received += member.get('amount_paid', 0)
+            paid_member_count += 1
+        else:
+            unpaid_member_count += 1
+            unpaid_members.append(member)
+
+        # Carry forward fees
+        carry_forward_fee += member.get('carry_forward_fee', 0)
+
+        # Advance unpaid calculation
+        if member.get('advance_amount', 0) > 0:
+            advance_not_paid_count += 1
+            advance_not_paid_members.append(member)
+
+    # Step 5: Calculate metrics for display in the dashboard
+    data = {
+        'total_amount': total_amount,
+        'total_received': total_received,
+        'paid_member_count': paid_member_count,
+        'unpaid_member_count': unpaid_member_count,
+        'carry_forward_fee': carry_forward_fee,
+        'advance_not_paid_count': advance_not_paid_count,
+        'unpaid_members': unpaid_members,
+        'advance_not_paid_members': advance_not_paid_members,
+    }
+
+    # Step 6: Render the dashboard
+    return render_template('fee_dashboard.html', data=data)
+
+2.Add fee details button to add the member detail once we received the payment 
+Amount_Paid_date,paid_amount,fee_paid_status,advance_amount,
+          advance_status,balance_amount details for that month in the sheet created in above program
+don't update in member file. it this values should update in fee details sheet for the current month 

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Member</title>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Add custom CSS for collapsible sections -->
+    <style>
+        .section-header:hover {
+            background-color: #e9ecef;
+        }
+
+        .section-header {
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .collapsible-section {
+            margin-bottom: 20px;
+        }
+
+        .section-body {
+            display: none;
+            padding: 10px 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+
+        .expanded .section-body {
+            display: block;
+        }
+    </style>
+
+    <!-- Add JavaScript for toggling collapsibles -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".section-header").forEach(header => {
+                header.addEventListener("click", () => {
+                    header.parentElement.classList.toggle("expanded");
+                });
+            });
+
+            // Auto-calculate age from DOB
+            function calculateAge(dob) {
+                if (!dob) return "";
+                const birthDate = new Date(dob);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            document.getElementById("date_of_birth").addEventListener("change", (e) => {
+                const age = calculateAge(e.target.value);
+                document.getElementById("age").value = age;
+            });
+
+            // Populate room type based on room capacity
+            document.getElementById("room_number").addEventListener("change", (e) => {
+                const roomDetails = {
+                    "101": "4 Sharing",
+                    "102": "5 Sharing",
+                    "103": "2 Sharing"
+                }; // Define your room number-capacity logic here
+                const roomType = roomDetails[e.target.value] || "Unknown Room Type";
+                document.getElementById("room_type").value = roomType;
+            });
+
+            // Auto-fill form fields
+            const randomName = () => {
+                const firstNames = ["John", "Jane", "Michael", "Mary", "David", "Emily"];
+                const lastNames = ["Doe", "Smith", "Johnson", "Brown", "Lee", "Garcia"];
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                return `${firstName} ${lastName}`;
+            };
+
+            const randomPhoneNumber = () => {
+                return "9" + Math.floor(100000000 + Math.random() * 900000000).toString();
+            };
+
+            const randomDateOfBirth = () => {
+                const start = new Date(1980, 0, 1).getTime();
+                const end = new Date(2005, 11, 31).getTime();
+                const randomTime = Math.floor(Math.random() * (end - start) + start);
+                const randomDate = new Date(randomTime);
+                return randomDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+            };
+
+            const randomIdentityNumber = () => {
+                return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            };
+
+            const randomRoomNumber = () => {
+                const roomNumber = Math.floor(101 + Math.random() * 50).toString();
+                return roomNumber;
+            };
+
+            const deriveFloorFromRoomNumber = (roomNumber) => {
+                const firstDigit = roomNumber.charAt(0);
+                switch (firstDigit) {
+                    case "1":
+                        return 1;
+                    case "2":
+                        return 2;
+                    case "3":
+                        return 3;
+                    default:
+                        return 0; // Unknown Floor
+                }
+            };
+
+            const randomAddress = () => {
+                const streets = ["Elm", "Maple", "Oak", "Pine", "Birch", "Cedar"];
+                const cities = ["Springfield", "Metropolis", "Gotham", "Star City", "Smallville", "Central City"];
+                const street = streets[Math.floor(Math.random() * streets.length)];
+                const city = cities[Math.floor(Math.random() * cities.length)];
+                return `${Math.floor(100 + Math.random() * 900)} ${street} Street, ${city}`;
+            };
+
+            const dob = randomDateOfBirth();
+            const roomNumber = randomRoomNumber();
+
+            document.getElementById("name").value = randomName();
+            document.getElementById("phone_number").value = randomPhoneNumber();
+            document.getElementById("date_of_birth").value = dob;
+            document.getElementById("age").value = calculateAge(dob);
+            document.getElementById("identity_number").value = randomIdentityNumber();
+            document.getElementById("joining_date").value = "2023-01-01"; // Static for testing purposes
+            document.getElementById("exit_date").value = "9999-12-31";
+
+            document.getElementById("father_name").value = randomName();
+            document.getElementById("father_number").value = randomPhoneNumber();
+
+            document.getElementById("address").value = randomAddress();
+            document.getElementById("office_address").value = randomAddress();
+
+            document.getElementById("room_number").value = roomNumber;
+            document.getElementById("floor_number").value = deriveFloorFromRoomNumber(roomNumber);
+            document.getElementById("room_type").value = "4 Sharing"; // You can add room-specific logic if needed
+            document.getElementById("bed_number").value = Math.ceil(Math.random() * 5); // Random bed number
+
+            document.getElementById("fee_amount").value = Math.floor(1000 + Math.random() * 5000).toString(); // Random fee between 1000 and 6000
+            document.getElementById("advance_amount").value = Math.floor(500 + Math.random() * 2000).toString(); // Random advance between 500 and 2500
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const fileInputs = document.querySelectorAll("input[type='file']");
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (file && file.size > 2 * 1024 * 1024) { // 2 MB
+                        alert("File size exceeds 2 MB.");
+                        e.target.value = ""; // Reset file input
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Add Member</h1>
+        <form action="/add_member" method="POST" enctype="multipart/form-data">
+            <!-- Section: Basic Details -->
+            <div class="collapsible-section">
+                <div class="section-header">1. Basic Details</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="member_id" class="form-label">Member ID</label>
+                        <input type="text" class="form-control" id="member_id" name="member_id" placeholder="Auto-generated" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required pattern="[A-Za-z ]+" title="Only letters and spaces are allowed.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" required pattern="\d{10}" title="Enter a valid 10-digit phone number.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="text" class="form-control" id="age" name="age" placeholder="Auto-calculated" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="identity_number" class="form-label">Identity Number</label>
+                        <input type="text" class="form-control" id="identity_number" name="identity_number" required pattern="\d+" title="Identity number must be numeric.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="joining_date" class="form-label">Joining Date</label>
+                        <input type="date" class="form-control" id="joining_date" name="joining_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exit_date" class="form-label">Exit Date</label>
+                        <input type="date" class="form-control" id="exit_date" name="exit_date" value="9999-12-31">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Family Details -->
+            <div class="collapsible-section">
+                <div class="section-header">2. Family Details</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="father_name" class="form-label">Father's Name</label>
+                        <input type="text" class="form-control" id="father_name" name="father_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="father_number" class="form-label">Father's Phone Number</label>
+                        <input type="tel" class="form-control" id="father_number" name="father_number" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Address and Office Details -->
+            <div class="collapsible-section">
+                <div class="section-header">3. Address and Office Details</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="office_address" class="form-label">Office Address</label>
+                        <textarea class="form-control" id="office_address" name="office_address" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Room Details -->
+            <div class="collapsible-section">
+                <div class="section-header">4. Room Details</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="room_number" class="form-label">Room Number</label>
+                        <input type="text" class="form-control" id="room_number" name="room_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="floor_number" class="form-label">Floor Number</label>
+                        <input type="text" class="form-control" id="floor_number" name="floor_number" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="room_type" class="form-label">Room Type (Bed Sharing)</label>
+                        <input type="text" class="form-control" id="room_type" name="room_type" placeholder="Auto-populated" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bed_number" class="form-label">Bed Number</label>
+                        <input type="text" class="form-control" id="bed_number" name="bed_number" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Fee Details -->
+            <div class="collapsible-section">
+                <div class="section-header">5. Fee Details</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="fee_amount" class="form-label">Fee Amount</label>
+                        <input type="number" class="form-control" id="fee_amount" name="fee_amount" required min="1" placeholder="Enter fee amount greater than 0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="advance_amount" class="form-label">Advance Amount</label>
+                        <input type="number" class="form-control" id="advance_amount" name="advance_amount">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Identity Document -->
+            <div class="collapsible-section">
+                <div class="section-header">6. Identity Document</div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <label for="photo_id" class="form-label">Photo ID (Max 2 MB)</label>
+                        <input type="file" class="form-control" id="photo_id" name="photo_id" accept="application/pdf, image/jpeg, image/png">
+                        <small class="text-muted">Maximum file size: 2 MB</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="identity_document" class="form-label">Identity Document (Max 2 MB)</label>
+                        <input type="file" class="form-control" id="identity_document" name="identity_document" accept=".pdf, .doc, .docx, .jpg, .png, .jpeg">
+                        <small class="text-muted">Maximum file size: 2 MB</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-3">Add Member</button>
+            </div>
+        </form>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Back Home</a>
+    </div>
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</body>
+
+</html>
