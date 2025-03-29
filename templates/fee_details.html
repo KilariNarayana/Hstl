@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fee Details</title>
+</head>
+<body>
+    <h1>Fee Details</h1>
+    <form method="POST">
+        <label for="search_query">Search:</label>
+        <input type="text" id="search_query" name="search_query" placeholder="Enter search value" required>
+
+        <label for="search_type">Search By:</label>
+        <select id="search_type" name="search_type">
+            <option value="name">Name</option>
+            <option value="room">Room Number</option>
+            <option value="phone">Phone Number</option>
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+
+    {% if search_results %}
+        <h2>Search Results:</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Name</th>
+                    <th>Room Number</th>
+                    <th>Fee Amount</th>
+                    <th>Payment Date</th>
+                    <th>Amount Paid Date</th>
+                    <th>Paid Amount</th>
+                    <th>Fee Paid Status</th>
+                    <th>Advance Amount</th>
+                    <th>Balance Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in search_results %}
+                <tr>
+                    <td>{{ result.member_id }}</td>
+                    <td>{{ result.name }}</td>
+                    <td>{{ result.room_number }}</td>
+                    <td>{{ result.fee_amount }}</td>
+                    <td>{{ result.payment_date }}</td>
+                    <td>{{ result.Amount_Paid_date }}</td>
+                    <td>{{ result.paid_amount }}</td>
+                    <td>{{ result.fee_paid_status }}</td>
+                    <td>{{ result.advance_amount }}</td>
+                    <td>{{ result.balance_amount }}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <form action="{{ url_for('edit_fee', member_id=result.member_id) }}" method="get" style="display: inline;">
+                            <button type="submit">Edit</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</body>
+</html>

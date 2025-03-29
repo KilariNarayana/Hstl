@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Dashboard</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .actions a {
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Fee Dashboard</h1>
+
+<p>Click the button below to generate the fee sheet for the current month:</p>
+<form action="/generate_fee_sheet" method="POST">
+    <button type="submit">Generate Fee Sheet</button>
+</form>
+
+{% if message %}
+<p style="color: green;"><strong>{{ message }}</strong></p>
+{% endif %}
+
+<table>
+    <tr>
+        <th>Description</th>
+        <th>Value</th>
+        <th>Actions</th>
+    </tr>
+    <tr>
+        <td>Total Amount for Month</td>
+        <td>{{ data.total_amount }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Total Amount Received in Current Month</td>
+        <td>{{ data.total_received }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Amount Paid Member Count</td>
+        <td>{{ data.paid_member_count }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Amount Unpaid Member Count</td>
+        <td>{{ data.unpaid_member_count }}</td>
+        <td class="actions">
+            <a href="#unpaid-members">View Unpaid Members</a>
+        </td>
+    </tr>
+    <tr>
+        <td>Carry Forward Fee from Last Month</td>
+        <td>{{ data.carry_forward_fee }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Advance Amount Not Paid Count</td>
+        <td>{{ data.advance_not_paid_count }}</td>
+        <td class="actions">
+            <a href="#advance-unpaid-members">View Advance Unpaid Members</a>
+        </td>
+    </tr>
+</table>
+
+<h2>Unpaid Members</h2>
+<a id="unpaid-members"></a>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Member ID</th>
+        <th>Room Number</th>
+        <th>Monthly Fee</th>
+    </tr>
+    {% for member in data.unpaid_members %}
+    <tr>
+        <td>{{ member.name }}</td>
+        <td>{{ member.member_id }}</td>
+        <td>{{ member.room_number }}</td>
+        <td>{{ member.monthly_fee }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Advance Fee Not Paid Members</h2>
+<a id="advance-unpaid-members"></a>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Member ID</th>
+        <th>Room Number</th>
+        <th>Advance Fee Due</th>
+    </tr>
+    {% for member in data.advance_not_paid_members %}
+    <tr>
+        <td>{{ member.name }}</td>
+        <td>{{ member.member_id }}</td>
+        <td>{{ member.room_number }}</td>
+        <td>{{ member.advance_fee_due }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

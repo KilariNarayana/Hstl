@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fee Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        // JavaScript to dynamically show/hide input fields based on the selected filter type
+        function updateFilterInput() {
+            const filterType = document.getElementById('filter_type').value;
+            document.getElementById('filter_due_date').style.display = filterType === 'due_date' ? 'block' : 'none';
+            document.getElementById('filter_room_number').style.display = filterType === 'room_number' ? 'block' : 'none';
+            document.getElementById('filter_name').style.display = filterType === 'name' ? 'block' : 'none';
+        }
+
+        // Ensure the correct input field is displayed on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateFilterInput();
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Fee Dashboard</h1>
+
+        <!-- Form to generate fee details -->
+        <form method="POST" action="{{ url_for('generate_fee_details') }}">
+            <button type="submit" class="btn btn-primary">Generate Fee Details</button>
+        </form>
+
+        <!-- Filter Form -->
+        <form method="POST" action="{{ url_for('fee_dashboard') }}" class="mt-3">
+            <div class="row">
+                <!-- Dropdown to select filter type -->
+                <div class="col-md-3">
+                    <label for="filter_type" class="form-label">Select Filter Type:</label>
+                    <select id="filter_type" name="filter_type" class="form-select" onchange="updateFilterInput()">
+                        <option value="">Select Filter</option>
+                        <option value="due_date" {% if filter_type == 'due_date' %}selected{% endif %}>Filter by Due Date</option>
+                        <option value="room_number" {% if filter_type == 'room_number' %}selected{% endif %}>Filter by Room Number</option>
+                        <option value="name" {% if filter_type == 'name' %}selected{% endif %}>Filter by Name</option>
+                    </select>
+                </div>
+
+                <!-- Input fields for filters -->
+                <div class="col-md-3" id="filter_due_date" style="display: none;">
+                    <label for="due_date" class="form-label">Due Date:</label>
+                    <input type="date" id="due_date" name="due_date" value="{{ filter_due_date or '' }}" class="form-control">
+                </div>
+                <div class="col-md-3" id="filter_room_number" style="display: none;">
+                    <label for="room_number" class="form-label">Room Number:</label>
+                    <input type="text" id="room_number" name="room_number" value="{{ filter_room_number or '' }}" class="form-control">
+                </div>
+                <div class="col-md-3" id="filter_name" style="display: none;">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" id="name" name="name" value="{{ filter_name or '' }}" class="form-control">
+                </div>
+
+                <!-- Filters for amount paid status and advance paid status -->
+                <div class="col-md-3">
+                    <label for="amount_paid_status" class="form-label">Filter by Amount Paid Status:</label>
+                    <select id="amount_paid_status" name="amount_paid_status" class="form-select">
+                        <option value="">Select Status</option>
+                        <option value="Y" {% if filter_amount_paid_status == 'Y' %}selected{% endif %}>Paid</option>
+                        <option value="N" {% if filter_amount_paid_status == 'N' %}selected{% endif %}>Not Paid</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="advance_paid_status" class="form-label">Filter by Advance Paid Status:</label>
+                    <select id="advance_paid_status" name="advance_paid_status" class="form-select">
+                        <option value="">Select Status</option>
+                        <option value="Y" {% if filter_advance_paid_status == 'Y' %}selected{% endif %}>Paid</option>
+                        <option value="N" {% if filter_advance_paid_status == 'N' %}selected{% endif %}>Not Paid</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-secondary mt-3">Filter</button>
+        </form>
+
+        <h2>Summary</h2>
+        <p>Total Amount Current Month: {{ total_amount_current_month }}</p>
+        <p>Total Amount Received So Far: {{ total_amount_received_so_far }}</p>
+        <p>Balance Amount: {{ balance_amount }}</p>
+        <p>Number of Members Paid: {{ no_of_members_paid }}</p>
+        <p>Balance Members: {{ balance_members }}</p>
+
+        <!-- Fee Details Table -->
+        {% if fee_details %}
+        <h2>Fee Details</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='name', sort_order='asc' if sort_by != 'name' or sort_order == 'desc' else 'desc') }}">
+                            Name
+                            {% if sort_by == 'name' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='room_number', sort_order='asc' if sort_by != 'room_number' or sort_order == 'desc' else 'desc') }}">
+                            Room Number
+                            {% if sort_by == 'room_number' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='fee_amount', sort_order='asc' if sort_by != 'fee_amount' or sort_order == 'desc' else 'desc') }}">
+                            Fee Amount
+                            {% if sort_by == 'fee_amount' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='previous_month_balance', sort_order='asc' if sort_by != 'previous_month_balance' or sort_order == 'desc' else 'desc') }}">
+                            Previous Month Balance
+                            {% if sort_by == 'previous_month_balance' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='due_date', sort_order='asc' if sort_by != 'due_date' or sort_order == 'desc' else 'desc') }}">
+                            Due Date
+                            {% if sort_by == 'due_date' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='payment_paid_amount', sort_order='asc' if sort_by != 'payment_paid_amount' or sort_order == 'desc' else 'desc') }}">
+                            Payment Paid Amount
+                            {% if sort_by == 'payment_paid_amount' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='advance_paid_amount', sort_order='asc' if sort_by != 'advance_paid_amount' or sort_order == 'desc' else 'desc') }}">
+                            Advance Paid Amount
+                            {% if sort_by == 'advance_paid_amount' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ url_for('fee_dashboard', sort_by='balance_payment', sort_order='asc' if sort_by != 'balance_payment' or sort_order == 'desc' else 'desc') }}">
+                            Balance Amount
+                            {% if sort_by == 'balance_payment' %}
+                                {% if sort_order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Fee Paid Status</th>
+                    <th>Amount Paid Date</th>
+                    <th>Advance Paid Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in fee_details %}
+                <tr>
+                    <td>{{ fee.name }}</td>
+                    <td>{{ fee.room_number }}</td>
+                    <td>{{ fee.fee_amount }}</td>
+                    <td>{{ fee.previous_month_balance }}</td>
+                    <td>{{ fee.due_date }}</td>
+                    <td>{{ fee.payment_paid_amount }}</td>
+                    <td>{{ fee.advance_paid_amount }}</td>
+                    <td>{{ fee.balance_payment }}</td>
+                    <td>{{ fee.fee_paid_status }}</td>
+                    <td>{{ fee.amount_paid_date }}</td>
+                    <td>{{ fee.advance_paid_status }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_fee', fee_id=fee.fee_id) }}" class="btn btn-warning">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Back to Home Button -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary" onclick="clearSession()">Back to Home</a>
+        <script>
+            // Clear session when navigating back to home
+            function clearSession() {
+                fetch("{{ url_for('fee_dashboard') }}", { method: "POST", body: JSON.stringify({ clear_session: true }) });
+            }
+        </script>
+    </div>
+</body>
+</html>

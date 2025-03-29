@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Rooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for table headers */
+        th {
+            background-color: #007bff; /* Blue background */
+            color: white; /* White text */
+        }
+        /* Custom styles for summary list */
+        .summary-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .summary-list li {
+            background-color: #f8f9fa; /* Light gray background */
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        /* Custom styles for headings */
+        h1, h2 {
+            color: #007bff; /* Blue text */
+        }
+        /* Custom styles for the container */
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        /* Custom styles for images in headings */
+        .heading-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">
+            <img src="https://img.icons8.com/ios-filled/50/000000/building.png" alt="Manage Rooms" class="heading-icon">
+            Manage Rooms
+        </h1>
+
+        <!-- Add Room Button -->
+        <button class="btn btn-primary mb-4" onclick="toggleAddRoomForm()">
+            <img src="https://img.icons8.com/ios-filled/50/000000/plus.png" alt="Add New Room" class="heading-icon">
+            Add New Room
+        </button>
+
+        <!-- Add Room Section -->
+        <form id="add-room-form" method="POST" action="{{ url_for('add_room') }}" class="mb-5" style="display: none;">
+            <div class="mb-3">
+                <label for="room_number" class="form-label">Room Number:</label>
+                <input type="text" class="form-control" name="room_number" required>
+            </div>
+            <div class="mb-3">
+                <label for="capacity" class="form-label">Capacity:</label>
+                <input type="number" class="form-control" name="capacity" min="1" required>
+            </div>
+            <div class="mb-3">
+                <label for="floor" class="form-label">Floor:</label>
+                <input type="number" class="form-control" name="floor" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Room</button>
+        </form>
+
+        <!-- Rooms Summary -->
+        <h2 class="mb-3">
+            <img src="https://img.icons8.com/ios-filled/50/000000/report-card.png" alt="Rooms Summary" class="heading-icon">
+            Rooms Summary
+        </h2>
+        <ul class="summary-list">
+            {% for floor, summary in floor_data|dictsort %}
+            <li>
+                <strong>Floor {{ floor }}:</strong> Total Beds: {{ summary['Total Beds'] }},
+                Occupied Beds: {{ summary['Occupied Beds'] }},
+                Available Beds: {{ summary['Available Beds'] }}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Filter by Floor -->
+        <h2 class="mb-3">
+            <img src="https://img.icons8.com/ios-filled/50/000000/search.png" alt="View Rooms" class="heading-icon">
+            View Rooms
+        </h2>
+        <label for="floor_filter" class="form-label">Select Floor:</label>
+        <select id="floor_filter" class="form-select mb-3" onchange="filterFloor(this)">
+            <option value="" disabled selected>Select Floor</option>
+            <option value="all">All Floors</option>
+            {% for floor in floor_data %}
+            <option value="{{ floor }}">Floor {{ floor }}</option>
+            {% endfor %}
+        </select>
+
+        <script>
+            function toggleAddRoomForm() {
+                const form = document.getElementById('add-room-form');
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+
+            function filterFloor(select) {
+                const selectedFloor = select.value;
+                const rows = document.querySelectorAll('.room-item');
+                rows.forEach(row => {
+                    if (selectedFloor === "all" || row.dataset.floor === selectedFloor) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+
+        <!-- Rooms Table -->
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Room Number</th>
+                    <th>Floor</th>
+                    <th>Capacity</th>
+                    <th>Occupied Beds</th>
+                    <th>Available Beds</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr class="room-item" data-floor="{{ room['floor'] }}" style="display: none;">
+                    <td>{{ room['room_number'] }}</td>
+                    <td>{{ room.get('floor', 'Unknown') }}</td>
+                    <td>{{ room.get('capacity', 'N/A') }}</td>
+                    <td>{{ room.get('occupied_beds', 0) }}</td>
+                    <td>{{ room['capacity'] - room['occupied_beds'] }}</td>
+                    <td>
+                        <!-- Edit Room Button -->
+                        <a href="{{ url_for('edit_room', room_number=room['room_number']) }}" class="btn btn-primary btn-sm">Edit</a>
+
+                        <!-- Delete Room Button -->
+                        <!-- Needs a form with POST request, as DELETE links are not secure -->
+                        <form action="{{ url_for('delete_room', room_number=room['room_number']) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this room?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back Home</a>
+    </div>
+</body>
+</html>

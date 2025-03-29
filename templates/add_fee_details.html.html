@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Fee Details for {{ member.name }}</title>
+</head>
+<body>
+    <h1>Add Fee Details for {{ member.name }}</h1>
+
+    <form action="{{ url_for('add_fee_details', member_id=member.member_id) }}" method="post">
+        <label for="Amount_Paid_date">Amount Paid Date:</label>
+        <input type="date" name="Amount_Paid_date" id="Amount_Paid_date" required><br>
+
+        <label for="paid_amount">Paid Amount:</label>
+        <input type="number" name="paid_amount" id="paid_amount" required><br>
+
+        <label for="fee_paid_status">Fee Paid Status:</label>
+        <select name="fee_paid_status" id="fee_paid_status">
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+        </select><br>
+
+        <label for="advance_amount">Advance Amount:</label>
+        <input type="number" name="advance_amount" id="advance_amount"><br>
+
+        <label for="advance_status">Advance Status:</label>
+        <select name="advance_status" id="advance_status">
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+        </select><br>
+
+        <label for="balance_amount">Balance Amount:</label>
+        <input type="number" name="balance_amount" id="balance_amount"><br>
+
+        <button type="submit">Submit Fee Details</button>
+    </form>
+</body>
+</html>
